@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+  <com.quran.id.apps.ui.preference.QuranHeaderPreference
+      android:summary="@string/about_description"
+      android:title="@string/app_name"/>
+
+  <PreferenceCategory
+      android:key="aboutDataSources"
+      android:title="@string/about_data_sources"
+      app:iconSpaceReserved="false">
+
+    <Preference
+        android:key="madaniImages"
+        android:summary="@string/about_madani_images"
+        android:title="@string/about_images"
+        app:iconSpaceReserved="false"
+        app:singleLineTitle="true">
+      <intent
+          android:action="android.intent.action.VIEW"
+          android:data="@string/about_madani_images_url"/>
+    </Preference>
+
+  </PreferenceCategory>
+
+</PreferenceScreen>

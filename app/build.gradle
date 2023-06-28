@@ -1,0 +1,182 @@
+plugins {
+  id 'quran.android.application'
+  id 'org.jetbrains.kotlin.kapt'
+  id 'org.jetbrains.kotlin.plugin.parcelize'
+  id 'net.ltgt.errorprone'
+  id 'com.squareup.anvil'
+}
+
+android {
+  namespace 'com.quran.id.apps'
+
+  defaultConfig {
+    versionCode 1040
+    versionName "1.0.4"
+    testInstrumentationRunner "com.quran.id.apps.core.QuranTestRunner"
+  }
+
+  buildFeatures.buildConfig = true
+
+  signingConfigs {
+    release {
+      storeFile file(STORE_FILE)
+      storePassword STORE_PASSWORD
+      keyAlias KEY_ALIAS
+      keyPassword KEY_PASSWORD
+    }
+  }
+
+  flavorDimensions = ["pageType"]
+  productFlavors {
+    madani {
+      applicationId "com.quran.id.apps"
+    }
+  }
+
+  buildTypes {
+    beta {
+      minifyEnabled true
+      proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard.cfg'
+      signingConfig signingConfigs.release
+      versionNameSuffix "-beta"
+      matchingFallbacks = ['debug']
+    }
+
+    debug {
+      applicationIdSuffix ".debug"
+      versionNameSuffix "-debug"
+    }
+
+    release {
+      minifyEnabled true
+      proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard.cfg'
+      signingConfig signingConfigs.release
+    }
+  }
+
+  applicationVariants.configureEach { variant ->
+    resValue "string", "authority", applicationId + '.data.QuranDataProvider'
+    resValue "string", "file_authority", applicationId + '.fileprovider'
+    if (applicationId.endsWith("debug")) {
+      mergedFlavor.manifestPlaceholders = [app_debug_label: "Quran " + flavorName.capitalize()]
+    }
+  }
+
+  kotlinOptions {
+    freeCompilerArgs += [ "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi" ]
+  }
+
+  testOptions {
+    unitTests {
+      includeAndroidResources = true
+      all {
+        testLogging {
+          events 'passed', 'skipped', 'failed', 'standardOut', 'standardError'
+          outputs.upToDateWhen { false }
+          showStandardStreams true
+          exceptionFormat "full"
+        }
+      }
+    }
+  }
+
+  lint {
+    checkReleaseBuilds true
+    enable 'Interoperability'
+    lintConfig file('lint.xml')
+  }
+
+  packagingOptions {
+    resources {
+      excludes += ['META-INF/*.kotlin_module', 'META-INF/DEPENDENCIES', 'META-INF/INDEX.LIST']
+    }
+  }
+}
+
+// required so that Errorprone doesn't look at generated files
+afterEvaluate {
+  tasks.withType(JavaCompile).configureEach {
+    options.errorprone.excludedPaths = ".*/build/generated/.*"
+    options.errorprone.disableWarningsInGeneratedCode = true
+  }
+}
+
+if (new File(rootDir, 'extras/extras.gradle').exists()) {
+   apply from: new File(rootDir, 'extras/extras.gradle')
+} else {
+   apply from: 'pluggable.gradle'
+}
+
+dependencies {
+  implementation project(path: ':common:analytics')
+  implementation project(path: ':common:audio')
+  implementation project(path: ':common:bookmark')
+  implementation project(path: ':common:data')
+  implementation project(path: ':common:di')
+  implementation project(path: ':common:download')
+  implementation project(path: ':common:networking')
+  implementation project(path: ':common:pages')
+  implementation project(path: ':common:reading')
+  implementation project(path: ':common:recitation')
+  implementation project(path: ':common:search')
+  implementation project(path: ':common:toolbar')
+  implementation project(path: ':common:upgrade')
+  implementation project(path: ':common:ui:core')
+
+  implementation project(path: ':feature:audio')
+  implementation project(path: ':feature:downloadmanager')
+  implementation project(path: ':feature:qarilist')
+
+  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutinesVersion}"
+  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${coroutinesVersion}"
+
+  implementation "com.squareup.retrofit2:retrofit:${retrofitVersion}"
+  implementation "com.squareup.retrofit2:converter-moshi:${retrofitVersion}"
+
+  implementation "androidx.appcompat:appcompat:${androidxAppcompatVersion}"
+  implementation "androidx.media:media:${androidxMediaVersion}"
+  implementation "androidx.localbroadcastmanager:localbroadcastmanager:${androidxLocalBroadcastVersion}"
+  implementation "androidx.preference:preference-ktx:${androidxPreferencesVersion}"
+  implementation "androidx.recyclerview:recyclerview:${androidxRecyclerViewVersion}"
+  implementation "com.google.android.material:material:${materialComponentsVersion}"
+  implementation "androidx.swiperefreshlayout:swiperefreshlayout:${androidxSwipeRefreshVersion}"
+
+  // okio
+  implementation "com.squareup.okio:okio:${okioVersion}"
+
+  // rx
+  implementation 'io.reactivex.rxjava3:rxjava:3.1.6'
+  implementation 'io.reactivex.rxjava3:rxandroid:3.0.2'
+
+  // dagger
+  kapt deps.dagger.apt
+  kaptTest deps.dagger.apt
+  implementation deps.dagger.runtime
+
+  // workmanager
+  implementation "androidx.work:work-runtime-ktx:${workManagerVersion}"
+
+  implementation "com.squareup.okio:okio:${okioVersion}"
+  implementation "com.squareup.okhttp3:okhttp"
+
+  implementation "com.squareup.moshi:moshi:${moshiVersion}"
+  kapt("com.squareup.moshi:moshi-kotlin-codegen:${moshiVersion}")
+
+  implementation "dev.chrisbanes.insetter:insetter:0.6.1"
+  implementation 'com.jakewharton.timber:timber:5.0.1'
+  debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.11'
+
+  testImplementation "junit:junit:${junitVersion}"
+  testImplementation "com.google.truth:truth:${truthVersion}"
+  testImplementation "org.mockito:mockito-core:${mockitoVersion}"
+  testImplementation "com.squareup.okhttp3:mockwebserver"
+  testImplementation "androidx.test.ext:junit-ktx:${androidxJunitExtVersion}"
+  testImplementation "org.robolectric:robolectric:${robolectricVersion}"
+  testImplementation "androidx.test.espresso:espresso-core:${espressoVersion}"
+  testImplementation "androidx.test.espresso:espresso-intents:${espressoVersion}"
+
+  errorprone 'com.google.errorprone:error_prone_core:2.20.0'
+
+  // Number Picker
+  implementation 'io.github.ShawnLin013:number-picker:2.4.13'
+}

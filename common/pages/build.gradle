@@ -1,0 +1,14 @@
+plugins {
+  id 'quran.android.library.android'
+  id 'org.jetbrains.kotlin.kapt'
+}
+
+android.namespace 'com.quran.id.apps.common.pages'
+
+dependencies {
+  implementation project(path: ':common:data')
+  implementation "androidx.fragment:fragment-ktx:${androidxFragmentVersion}"
+
+  kapt deps.dagger.apt
+  implementation deps.dagger.runtime
+}

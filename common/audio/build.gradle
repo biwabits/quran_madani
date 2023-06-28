@@ -1,0 +1,23 @@
+plugins {
+  id 'quran.android.library.android'
+  id 'org.jetbrains.kotlin.plugin.parcelize'
+  id 'com.squareup.anvil'
+}
+
+anvil { generateDaggerFactories = true }
+
+android.namespace 'com.quran.id.apps.common.audio'
+
+dependencies {
+  implementation project(":common:data")
+  implementation project(":common:download")
+
+  implementation deps.dagger.runtime
+  implementation "androidx.annotation:annotation:${androidxAnnotationVersion}"
+  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutinesVersion}"
+  implementation "com.squareup.okio:okio:${okioVersion}"
+
+  testImplementation "junit:junit:${junitVersion}"
+  testImplementation "com.google.truth:truth:${truthVersion}"
+  testImplementation "com.squareup.okio:okio-fakefilesystem:${okioVersion}"
+}

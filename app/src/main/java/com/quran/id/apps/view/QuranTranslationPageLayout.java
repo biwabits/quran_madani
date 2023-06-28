@@ -1,0 +1,58 @@
+package com.quran.id.apps.view;
+
+import android.content.Context;
+import android.graphics.Color;
+import android.view.View;
+
+import androidx.annotation.NonNull;
+
+import com.quran.id.apps.ui.translation.TranslationView;
+import com.quran.id.apps.ui.util.PageController;
+import com.quran.id.apps.util.QuranSettings;
+
+public class QuranTranslationPageLayout extends QuranPageLayout {
+  private TranslationView translationView;
+
+  public QuranTranslationPageLayout(Context context) {
+    super(context);
+    isFullWidth = true;
+    initialize();
+  }
+
+  @Override
+  protected View generateContentView(@NonNull Context context, boolean isLandscape) {
+    translationView = new TranslationView(context);
+    return translationView;
+  }
+
+  @Override
+  public void setPageController(PageController controller, int pageNumber) {
+    super.setPageController(controller, pageNumber);
+    translationView.setPageController(controller);
+  }
+
+  @Override
+  public void updateView(@NonNull QuranSettings quranSettings) {
+    super.updateView(quranSettings);
+    translationView.refresh(quranSettings);
+  }
+
+  @Override
+  protected void updateBackground(boolean nightMode, QuranSettings quranSettings) {
+    if (nightMode) {
+      final int backgroundBrightness = quranSettings.getNightModeBackgroundBrightness();
+      setBackgroundColor(Color.rgb(backgroundBrightness, backgroundBrightness, backgroundBrightness));
+    } else {
+      setBackgroundColor(Color.WHITE);
+    }
+  }
+
+  @Override
+  protected boolean shouldWrapWithScrollView() {
+    return false;
+  }
+
+  public TranslationView getTranslationView() {
+    return translationView;
+  }
+}

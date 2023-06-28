@@ -1,0 +1,18 @@
+plugins {
+  id 'quran.android.library'
+  id 'com.squareup.anvil'
+}
+
+anvil { generateDaggerFactories = true }
+
+dependencies {
+  implementation project(":common:data")
+
+  implementation "androidx.annotation:annotation:${androidxAnnotationVersion}"
+
+  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:${coroutinesVersion}"
+  implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:${coroutinesVersion}"
+
+  // dagger
+  implementation deps.dagger.runtime
+}

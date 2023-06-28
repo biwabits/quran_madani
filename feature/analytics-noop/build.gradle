@@ -1,0 +1,13 @@
+plugins {
+  id 'quran.android.library'
+  id 'org.jetbrains.kotlin.kapt'
+}
+
+dependencies {
+  implementation project(":common:analytics")
+  implementation "androidx.annotation:annotation:${androidxAnnotationVersion}"
+
+  // dagger
+  kapt deps.dagger.apt
+  implementation deps.dagger.runtime
+}
